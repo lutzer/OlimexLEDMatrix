@@ -15,7 +15,7 @@ void setup() {
 
 void loop() {
   
-  unsigned long seconds = millis() / 1000;
+  int seconds = (millis() / 1000)% 100;
   
   ledMatrix.clear();
   

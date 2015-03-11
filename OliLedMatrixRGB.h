@@ -73,15 +73,15 @@ public:
 
   void drawRectangle(int x, int y, int w, int h, boolean filled) {
     if (filled) {
-      for(int i=y; i<=h+1; i++)
-        for(int j=x; j<=w+1; j++)
+      for(int i=y; i<y+h; i++)
+        for(int j=x; j<x+w; j++)
           this->drawPixel(i,j);
     } else {
-      for(int i=y; i<=h; i++) {
+      for(int i=y; i<y+h; i++) {
         this->drawPixel(x,i);
         this->drawPixel(x+w-1,i);
       }
-      for(int i=x; i<=w+1; i++) {
+      for(int i=x; i<x+w; i++) {
         this->drawPixel(i,y);
         this->drawPixel(i,y+h-1);
       }  
