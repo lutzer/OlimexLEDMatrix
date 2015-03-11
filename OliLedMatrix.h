@@ -9,13 +9,15 @@
 
 #define ROWS 8
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 typedef unsigned char uchar;
 
 class OliLedMatrix {
   
   public:
+  
+    uchar brightness; // 255 highest brigthness, 0 lowest brightness
   
     OliLedMatrix(int latchPin, int dataPin, int clockPin) {
       this->dataPin = dataPin;
@@ -26,11 +28,9 @@ class OliLedMatrix {
       pinMode (clockPin, OUTPUT);
       pinMode (dataPin, OUTPUT);
       
+      this->brightness = 255;
+      
       this->clear();
-    }
-    
-    void setBrightness(uchar brightness) {
-      this->brightness = brightness;
     }
     
     // clears matrix
@@ -45,28 +45,44 @@ class OliLedMatrix {
     */
     void drawArray(int x, int y, const uchar *array, int rows) {
       for (int i=0; i<rows; i++)
-	matrix[i+y] = matrix[i+y] | (array[i] >> x);
+	matrix[i+y] |= (array[i] >> x);
     }
     
     // draws a pixel
     void drawPixel(int x, int y) {
       if (y < ROWS && y >= 0)
-        matrix[y] = matrix[y] | (1 << (8-x-1) );
+        matrix[y] |= (1 << (8-x-1) );
+    }
+    
+    // erase a Pixel
+    void erasePixel(int x, int y) {
+      if (y < ROWS && y >= 0)
+        matrix[y] &= ~(1 << (8-x-1) );
+    }
+    
+    void drawLine(int x, int y, int length, boolean horizontal = true) {
+      if (!horizontal)
+        for(int i=0; i<length; i++)
+          drawPixel(x,y+i);
+      else
+        for(int i=0; i<length; i++)
+          drawPixel(x+i,y);
+      
     }
     
     // draws a rectangle
-    void drawRectangle(int x, int y, int w, int h, boolean filled) {
+    void drawRectangle(int x, int y, int w, int h, boolean filled = false) {
       
       if (filled) {
-        for(int i=y; i<=h; i++)
-          for(int j=x; j<=w; j++)
+        for(int i=y; i<y+h; i++)
+          for(int j=x; j<x+w; j++)
              this->drawPixel(i,j);
       } else {
-        for(int i=y; i<=h; i++) {
+        for(int i=y; i<y+h; i++) {
 	  this->drawPixel(x,i);
 	  this->drawPixel(x+w-1,i);
         }
-        for(int i=x; i<=w; i++) {
+        for(int i=x; i<x+w; i++) {
   	  this->drawPixel(i,y);
   	  this->drawPixel(i,y+h-1);
         }  
@@ -81,15 +97,24 @@ class OliLedMatrix {
          shiftOut(this->dataPin, this->clockPin, LSBFIRST, matrix[i]);
          shiftOut(this->dataPin, this->clockPin, LSBFIRST, 1 << i);
          digitalWrite(this->latchPin, HIGH);
-         delayMicroseconds(2000);
+         delayMicroseconds(20);
+         
+         // make the display less bright
+         if (this->brightness < 255) {
+           digitalWrite(this->latchPin, LOW);
+           shiftOut(this->dataPin, this->clockPin, LSBFIRST, 0);
+           shiftOut(this->dataPin, this->clockPin, LSBFIRST, 1 << i);
+           digitalWrite(this->latchPin, HIGH);
+           delayMicroseconds((255 - this->brightness)*8);
+         }
+         
        }
     }
     
   private:
-  
     uchar matrix[ROWS];
     int latchPin,dataPin,clockPin;
-    uchar brightness;
 };
 
 #endif
+
