@@ -106,7 +106,6 @@ public:
       delayMicroseconds(10);
     }
     digitalWrite(this->latchPin, HIGH);
-    delay(1000);
   }
 
 private:
