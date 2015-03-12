@@ -25,7 +25,7 @@ void loop() {
       ledMatrix.drawRectangle(2,2,4,4);
   else if (time%1000 < 300)
       ledMatrix.drawRectangle(1,1,6,6);
-  else if (time%1000 < 300)
+  else
       ledMatrix.drawRectangle(0,0,8,8);
       
   ledMatrix.display();
