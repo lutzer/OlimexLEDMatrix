@@ -1,6 +1,8 @@
 # OlimexLEDMatrix
 Arduino Library for interfacing a single Olimex (RGB and non-RGB) 8x8 Matrix
 
+![Image of OlimexRGB Matrix](matrix.jpg)
+
 ## Installation
 Download the zip file and unpack it into its own Folder within your Arduino Sketchbooks library folder. 
 (OS X: ~/Documents/Arduino/libraries/OlimexLedMatrix)
